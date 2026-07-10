@@ -14,6 +14,18 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Uploaded images are served by a route handler (standalone does not serve
+  // runtime-added public files). Keep stored `/uploads/...` URLs working by
+  // rewriting them to that handler before the static-file check.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/uploads/:path*", destination: "/api/uploads/:path*" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
 };
 
 export default nextConfig;

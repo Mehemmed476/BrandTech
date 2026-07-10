@@ -52,6 +52,52 @@ export function UploadButton({
   );
 }
 
+/** Multi-file upload button: uploads several images at once. */
+export function MultiUploadButton({
+  onUploaded,
+  label = "Şəkilləri yüklə",
+}: {
+  onUploaded: (urls: string[]) => void;
+  label?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { uploadMany, uploading } = useImageUpload();
+
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (files.length === 0) return;
+    const urls = await uploadMany(files);
+    if (urls.length > 0) onUploaded(urls);
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ACCEPT}
+        multiple
+        className="hidden"
+        onChange={handleChange}
+      />
+      <button
+        type="button"
+        disabled={uploading}
+        onClick={() => inputRef.current?.click()}
+        className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 disabled:opacity-60"
+      >
+        {uploading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <ImagePlus className="h-4 w-4" />
+        )}
+        {uploading ? "Yüklənir…" : label}
+      </button>
+    </>
+  );
+}
+
 /** Full single-image field: preview + upload button + manual URL input. */
 export function ImageUploadField({
   label,

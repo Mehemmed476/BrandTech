@@ -24,8 +24,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Uploads directory must be writable by the runtime user and is mounted as a
-# persistent volume in docker-compose so uploaded images survive rebuilds.
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+
 RUN mkdir -p ./public/uploads && chown -R nextjs:nodejs ./public/uploads
 
 USER nextjs

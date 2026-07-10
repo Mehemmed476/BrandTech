@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   ChevronDown,
   Clock,
-  Headphones,
   LayoutGrid,
   Menu,
   MessageCircle,
@@ -44,7 +43,7 @@ function Logo({
           {storeName}
         </span>
         <span className="mt-1 block text-[11px] font-semibold text-brand-600">
-          Kompüter avadanlıqları mağazası
+          Kompüter avadanlıqları
         </span>
       </span>
     </Link>
@@ -62,7 +61,7 @@ function SearchBar({ id }: { id: string }) {
         className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
       />
       <input
-        className="h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 pl-11 pr-24 text-sm text-gray-800 shadow-inner outline-none transition placeholder:text-gray-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10"
+        className="h-11 w-full rounded-full border border-gray-200 bg-gray-50 pl-11 pr-24 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10"
         id={id}
         name="q"
         placeholder="SSD, RAM, GPU, monitor axtar…"
@@ -70,7 +69,7 @@ function SearchBar({ id }: { id: string }) {
       />
       <button
         type="submit"
-        className="absolute right-1.5 top-1.5 inline-flex h-9 items-center rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700"
+        className="absolute right-1.5 top-1.5 inline-flex h-8 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700"
       >
         Axtar
       </button>
@@ -84,8 +83,8 @@ function CartButton() {
   return (
     <Link
       href="/cart"
-      className="relative inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-sm font-semibold text-gray-800 shadow-soft transition hover:border-brand-300 hover:text-brand-700"
-      aria-label="Səbəti aç"
+      aria-label="Səbət"
+      className="relative inline-flex h-10 items-center gap-2 rounded-xl px-2.5 text-sm font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700"
     >
       <span className="relative">
         <ShoppingCart className="h-5 w-5" />
@@ -95,10 +94,13 @@ function CartButton() {
           </span>
         ) : null}
       </span>
-      <span className="hidden lg:inline">Səbət</span>
+      <span className="hidden xl:inline">Səbət</span>
     </Link>
   );
 }
+
+const navLinkClass =
+  "inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700";
 
 export function SiteHeader({
   settings,
@@ -109,14 +111,13 @@ export function SiteHeader({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const close = () => setIsOpen(false);
-  const quickLinks = categories.slice(0, 6);
 
   return (
     <header>
       {/* Top info bar */}
       <div className="hidden bg-gray-900 text-white md:block">
-        <div className="container-page flex h-10 items-center justify-between text-xs">
-          <div className="flex items-center gap-5 text-white/70">
+        <div className="container-page flex h-9 items-center justify-between text-xs text-white/60">
+          <div className="flex items-center gap-5">
             <span className="inline-flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5 text-leaf-400" />
               {settings.workingHours}
@@ -126,7 +127,7 @@ export function SiteHeader({
               {settings.deliveryText}
             </span>
           </div>
-          <div className="flex items-center gap-5 text-white/70">
+          <div className="flex items-center gap-5">
             <span className="inline-flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-leaf-400" />
               {settings.warrantyText}
@@ -151,46 +152,47 @@ export function SiteHeader({
 
       {/* Sticky main bar */}
       <div className="sticky top-0 z-50 border-b border-gray-100 glass">
-        <div className="container-page flex h-[72px] items-center gap-3 lg:gap-5">
+        <div className="container-page flex h-16 items-center gap-3 lg:gap-6">
           <Logo storeName={settings.storeName} />
 
-          <div className="group relative hidden lg:block">
-            <button
-              type="button"
-              className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700"
-            >
-              <LayoutGrid className="h-4 w-4" />
-              Kateqoriyalar
-              <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180" />
-            </button>
-            <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
-              <MegaCategoryMenu categories={categories} />
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-0.5 lg:flex">
+            <div className="group relative">
+              <Link href="/categories" className={navLinkClass}>
+                <LayoutGrid className="h-4 w-4" />
+                Kateqoriyalar
+                <ChevronDown className="h-4 w-4 text-gray-400 transition-transform group-hover:rotate-180" />
+              </Link>
+              <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                <MegaCategoryMenu categories={categories} />
+              </div>
             </div>
-          </div>
+            <Link href="/products" className={navLinkClass}>
+              Məhsullar
+            </Link>
+          </nav>
 
-          <div className="hidden max-w-2xl flex-1 lg:block">
+          {/* Search */}
+          <div className="hidden flex-1 lg:block">
             <SearchBar id="site-search" />
           </div>
 
-          <div className="ml-auto flex items-center gap-1.5 lg:gap-2">
+          {/* Right actions */}
+          <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
             <Link
               href="/admin"
-              className="hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700 sm:inline-flex"
+              aria-label="Admin / Giriş"
+              className="hidden h-10 items-center gap-2 rounded-xl px-2.5 text-sm font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700 sm:inline-flex"
             >
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gray-100 text-gray-700">
-                <UserRound className="h-4.5 w-4.5" />
-              </span>
-              <span className="hidden leading-none xl:block">
-                <span className="block text-[11px] text-gray-400">Hesab</span>
-                <span className="block">Admin / Giriş</span>
-              </span>
+              <UserRound className="h-5 w-5" />
+              <span className="hidden xl:inline">Giriş</span>
             </Link>
 
             <CartButton />
 
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-800 shadow-soft transition hover:border-brand-300 hover:text-brand-700 lg:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-gray-700 transition hover:bg-brand-50 hover:text-brand-700 lg:hidden"
               onClick={() => setIsOpen((value) => !value)}
               aria-label="Menyunu aç"
               aria-expanded={isOpen}
@@ -201,34 +203,6 @@ export function SiteHeader({
                 <Menu className="h-5 w-5" />
               )}
             </button>
-          </div>
-        </div>
-
-        {/* Quick category strip */}
-        <div className="hidden border-t border-gray-100 lg:block">
-          <div className="container-page flex h-11 items-center gap-1 text-sm">
-            <Link
-              href="/products"
-              className="rounded-lg px-3 py-1.5 font-medium text-gray-600 transition hover:bg-brand-50 hover:text-brand-700"
-            >
-              Bütün məhsullar
-            </Link>
-            {quickLinks.map((category) => (
-              <Link
-                key={category.id}
-                href={`/products?category=${category.slug}`}
-                className="rounded-lg px-3 py-1.5 font-medium text-gray-600 transition hover:bg-brand-50 hover:text-brand-700"
-              >
-                {category.name}
-              </Link>
-            ))}
-            <Link
-              href="/products"
-              className="ml-auto inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold text-brand-700 transition hover:bg-brand-50"
-            >
-              <Headphones className="h-4 w-4" />
-              Seçimdə kömək lazımdır?
-            </Link>
           </div>
         </div>
       </div>

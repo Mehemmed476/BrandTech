@@ -152,12 +152,6 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
             </div>
           </div>
 
-          {product.description ? (
-            <p className="mt-5 leading-relaxed text-gray-600">
-              {product.description}
-            </p>
-          ) : null}
-
           <div className="mt-6 grid grid-cols-3 gap-3">
             {assurances.map((item) => {
               const Icon = item.icon;
@@ -174,60 +168,42 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
               );
             })}
           </div>
+
+          {product.specifications.length > 0 ? (
+            <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-soft">
+              <div className="mb-3 flex items-center gap-2">
+                <ListChecks className="h-5 w-5 text-brand-600" />
+                <h2 className="font-bold text-gray-900">
+                  Texniki xüsusiyyətlər
+                </h2>
+              </div>
+              <dl className="overflow-hidden rounded-xl border border-gray-100">
+                {product.specifications.map((spec, index) => (
+                  <div
+                    key={`${spec.key}-${index}`}
+                    className={`flex items-center justify-between gap-4 px-4 py-3 text-sm ${
+                      index % 2 === 0 ? "bg-gray-50/70" : "bg-white"
+                    }`}
+                  >
+                    <dt className="font-medium text-gray-500">{spec.key}</dt>
+                    <dd className="text-right font-semibold text-gray-900">
+                      {spec.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
         </div>
       </section>
 
-      {product.specifications.length > 0 ? (
-        <section className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-soft">
-            <div className="mb-4 flex items-center gap-2">
-              <ListChecks className="h-5 w-5 text-brand-600" />
-              <h2 className="text-lg font-bold text-gray-900">
-                Texniki xüsusiyyətlər
-              </h2>
-            </div>
-            <dl className="overflow-hidden rounded-2xl border border-gray-100">
-              {product.specifications.map((spec, index) => (
-                <div
-                  key={`${spec.key}-${index}`}
-                  className={`flex items-center justify-between gap-4 px-4 py-3.5 text-sm ${
-                    index % 2 === 0 ? "bg-gray-50/70" : "bg-white"
-                  }`}
-                >
-                  <dt className="font-medium text-gray-500">{spec.key}</dt>
-                  <dd className="text-right font-semibold text-gray-900">
-                    {spec.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-soft">
-            <h2 className="text-lg font-bold text-gray-900">Məhsul haqqında</h2>
-            <p className="mt-3 leading-relaxed text-gray-600">
-              {product.description ||
-                "Bu məhsul üçün təsvir tezliklə əlavə olunacaq."}
-            </p>
-            <ul className="mt-5 space-y-2.5">
-              {product.specifications.slice(0, 4).map((spec, index) => (
-                <li
-                  key={`${spec.key}-${index}`}
-                  className="flex items-start gap-2.5 text-sm text-gray-600"
-                >
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-brand-500" />
-                  <span>
-                    <span className="font-semibold text-gray-800">
-                      {spec.key}:
-                    </span>{" "}
-                    {spec.value}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
+      <section className="mt-10 rounded-3xl border border-gray-100 bg-white p-6 shadow-soft">
+        <h2 className="text-lg font-bold text-gray-900">Məhsul haqqında</h2>
+        <p className="mt-3 max-w-3xl leading-relaxed text-gray-600">
+          {product.description ||
+            "Bu məhsul üçün təsvir tezliklə əlavə olunacaq."}
+        </p>
+      </section>
 
       {relatedProducts.length > 0 ? (
         <section className="mt-14">

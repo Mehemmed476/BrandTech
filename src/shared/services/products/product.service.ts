@@ -117,8 +117,13 @@ export type StoreProductQuery = {
   q?: string;
   category?: string; // slug
   brand?: string; // slug
+  brands?: string[]; // slugs (multi-select)
   minPrice?: number;
   maxPrice?: number;
+  inStock?: boolean;
+  isNew?: boolean;
+  isFeatured?: boolean;
+  onSale?: boolean;
   sort?: "featured" | "newest" | "price-asc" | "price-desc" | "name";
   page?: number;
   pageSize?: number;
@@ -157,12 +162,20 @@ export async function getStoreProducts(
     ];
   }
   if (query.category) where.category = { slug: query.category };
-  if (query.brand) where.brand = { slug: query.brand };
+  if (query.brands && query.brands.length > 0) {
+    where.brand = { slug: { in: query.brands } };
+  } else if (query.brand) {
+    where.brand = { slug: query.brand };
+  }
   if (query.minPrice != null || query.maxPrice != null) {
     where.price = {};
     if (query.minPrice != null) where.price.gte = query.minPrice;
     if (query.maxPrice != null) where.price.lte = query.maxPrice;
   }
+  if (query.inStock) where.stock = { gt: 0 };
+  if (query.isNew) where.isNew = true;
+  if (query.isFeatured) where.isFeatured = true;
+  if (query.onSale) where.oldPrice = { not: null };
 
   const [rows, total] = await Promise.all([
     prisma.product.findMany({

@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, PackageSearch, Tag } from "lucide-react";
 import { Breadcrumb, EmptyState, ProductCard } from "@/shared/components";
 import {
+  CatalogActiveFilters,
   CatalogChips,
   CatalogFilters,
   CatalogSearch,
   CatalogSort,
+  CatalogViewToggle,
 } from "@/features/products/store-catalog-controls";
 import { safeQuery } from "@/shared/lib/safe-query";
 import { emptyPage } from "@/shared/types/pagination";
@@ -20,6 +22,11 @@ export type CatalogSearchParams = {
   sort?: string;
   min?: string;
   max?: string;
+  instock?: string;
+  sale?: string;
+  new?: string;
+  featured?: string;
+  view?: string;
   page?: string;
 };
 
@@ -31,6 +38,11 @@ function buildHref(params: CatalogSearchParams, page: number) {
   if (params.sort) search.set("sort", params.sort);
   if (params.min) search.set("min", params.min);
   if (params.max) search.set("max", params.max);
+  if (params.instock) search.set("instock", params.instock);
+  if (params.sale) search.set("sale", params.sale);
+  if (params.new) search.set("new", params.new);
+  if (params.featured) search.set("featured", params.featured);
+  if (params.view) search.set("view", params.view);
   search.set("page", String(page));
   return `/products?${search.toString()}`;
 }
@@ -47,9 +59,15 @@ export async function ProductListPage({
         getStoreProducts({
           q: searchParams.q,
           category: searchParams.category,
-          brand: searchParams.brand,
+          brands: searchParams.brand
+            ? searchParams.brand.split(",").filter(Boolean)
+            : undefined,
           minPrice: searchParams.min ? Number(searchParams.min) : undefined,
           maxPrice: searchParams.max ? Number(searchParams.max) : undefined,
+          inStock: searchParams.instock === "1",
+          isNew: searchParams.new === "1",
+          isFeatured: searchParams.featured === "1",
+          onSale: searchParams.sale === "1",
           sort:
             (searchParams.sort as
               "featured" | "newest" | "price-asc" | "price-desc" | "name") ||
@@ -61,6 +79,12 @@ export async function ProductListPage({
     safeQuery(getActiveCategories, []),
     safeQuery(getActiveBrands, []),
   ]);
+
+  const view = searchParams.view === "comfortable" ? "comfortable" : "compact";
+  const gridClass =
+    view === "compact"
+      ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+      : "grid grid-cols-2 gap-4 sm:grid-cols-2 xl:grid-cols-3";
 
   return (
     <main className="container-page py-6">
@@ -90,13 +114,18 @@ export async function ProductListPage({
           <span className="font-bold text-gray-900">{products.total}</span>{" "}
           məhsul
         </p>
-        <CatalogSort />
+        <div className="flex items-center gap-2">
+          <CatalogSort />
+          <CatalogViewToggle />
+        </div>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[264px_1fr]">
         <CatalogFilters brands={brands} />
 
         <div>
+          <CatalogActiveFilters categories={categories} brands={brands} />
+
           {products.items.length === 0 ? (
             <EmptyState
               icon={<PackageSearch className="h-8 w-8" />}
@@ -105,9 +134,13 @@ export async function ProductListPage({
             />
           ) : (
             <>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className={gridClass}>
                 {products.items.map((product) => (
-                  <ProductCard product={product} key={product.id} />
+                  <ProductCard
+                    product={product}
+                    variant={view}
+                    key={product.id}
+                  />
                 ))}
               </div>
 

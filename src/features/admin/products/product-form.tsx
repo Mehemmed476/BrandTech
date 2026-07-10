@@ -19,7 +19,10 @@ import {
   createProductAction,
   updateProductAction,
 } from "@/features/admin/products/product-actions";
-import { UploadButton } from "@/features/admin/image-upload-field";
+import {
+  MultiUploadButton,
+  UploadButton,
+} from "@/features/admin/image-upload-field";
 import type { AdminProductDetail } from "@/shared/services/products/product.service";
 import type { CategoryOption } from "@/shared/services/categories/category.service";
 import type { BrandOption } from "@/shared/services/brands/brand.service";
@@ -94,6 +97,20 @@ export function ProductForm({
       ...prev,
       { imageUrl: "", altText: "", isMain: prev.length === 0 },
     ]);
+  const addImages = (urls: string[]) =>
+    setImages((prev) => {
+      const existing = prev.filter((image) => image.imageUrl.trim());
+      const added = urls.map((url) => ({
+        imageUrl: url,
+        altText: "",
+        isMain: false,
+      }));
+      const merged = [...existing, ...added];
+      if (merged.length > 0 && !merged.some((image) => image.isMain)) {
+        merged[0].isMain = true;
+      }
+      return merged.length > 0 ? merged : prev;
+    });
   const removeImage = (index: number) =>
     setImages((prev) => {
       const next = prev.filter((_, i) => i !== index);
@@ -286,16 +303,19 @@ export function ProductForm({
 
       {/* Images */}
       <section className="space-y-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-soft">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-bold text-gray-900">Şəkillər</h2>
-          <button
-            type="button"
-            onClick={addImage}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-semibold text-gray-700 transition hover:border-brand-300 hover:text-brand-700"
-          >
-            <Plus className="h-4 w-4" />
-            Şəkil əlavə et
-          </button>
+          <div className="flex items-center gap-2">
+            <MultiUploadButton onUploaded={addImages} />
+            <button
+              type="button"
+              onClick={addImage}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-gray-200 px-3 text-sm font-semibold text-gray-700 transition hover:border-brand-300 hover:text-brand-700"
+            >
+              <Plus className="h-4 w-4" />
+              URL əlavə et
+            </button>
+          </div>
         </div>
         {imagesError ? (
           <p className="text-xs font-medium text-rose-600">

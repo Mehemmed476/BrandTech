@@ -205,6 +205,25 @@ textarea {
   display: none;
 }
 
+/* Slim scrollbar for the category sidebar */
+.scrollbar-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(46, 125, 50, 0.3) transparent;
+}
+.scrollbar-slim::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  background: rgba(46, 125, 50, 0.25);
+  border-radius: 9999px;
+}
+.scrollbar-slim::-webkit-scrollbar-thumb:hover {
+  background: rgba(46, 125, 50, 0.45);
+}
+.scrollbar-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* Marquee track (duplicated content, translated -50%) */
 .marquee-track {
   display: flex;
