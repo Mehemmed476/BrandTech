@@ -3,6 +3,7 @@ export * from "./category-card";
 export * from "./category-icon";
 export * from "./confirm-dialog";
 export * from "./empty-state";
+export * from "./json-ld";
 export * from "./product-card";
 export * from "./section-header";
 export * from "./skeleton";

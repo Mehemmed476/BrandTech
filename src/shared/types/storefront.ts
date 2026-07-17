@@ -38,7 +38,13 @@ export type StoreBanner = {
   id: string;
   title: string;
   subtitle?: string;
+  badgeText: string;
   imageUrl: string;
   linkUrl?: string;
   position: "HERO" | "CATEGORY" | "PROMO";
+  showBadge: boolean;
+  showTitle: boolean;
+  showSubtitle: boolean;
+  showPrimaryButton: boolean;
+  showSecondaryButton: boolean;
 };

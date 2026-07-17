@@ -1,0 +1,12 @@
+/** Renders a schema.org JSON-LD script tag for structured data / rich results. */
+export function JsonLd({ data }: { data: Record<string, unknown> }) {
+  return (
+    <script
+      type="application/ld+json"
+      // Escape "<" so the JSON can't break out of the script tag.
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+      }}
+    />
+  );
+}

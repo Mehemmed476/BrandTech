@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { PackageSearch, Plus } from "lucide-react";
 import type { ProductStatus } from "@prisma/client";
 import { ButtonLink, EmptyState } from "@/shared/components";
@@ -13,6 +12,7 @@ import {
 import { DeleteAction } from "@/features/admin/delete-action";
 import { Pagination } from "@/features/admin/pagination";
 import { ProductFilters } from "@/features/admin/products/product-filters";
+import { ProductCardPreview } from "@/features/admin/products/product-card-preview";
 import { deleteProductAction } from "@/features/admin/products/product-actions";
 import {
   productStatusLabel,
@@ -98,20 +98,7 @@ export async function AdminProductsPage({
                     className="transition hover:bg-gray-50/60"
                   >
                     <td className={tdClass}>
-                      <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-brand-50 to-white p-1">
-                          <Image
-                            alt=""
-                            src={product.image}
-                            fill
-                            sizes="40px"
-                            className="object-contain"
-                          />
-                        </div>
-                        <span className="max-w-[240px] truncate font-semibold text-gray-900">
-                          {product.name}
-                        </span>
-                      </div>
+                      <ProductCardPreview product={product} />
                     </td>
                     <td className={tdClass}>{product.brandName ?? "—"}</td>
                     <td className={tdClass}>{product.categoryName}</td>

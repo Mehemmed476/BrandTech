@@ -186,3 +186,7 @@ export async function getAdminOrderById(
 export async function updateOrderStatus(id: string, status: OrderStatus) {
   return prisma.order.update({ where: { id }, data: { status } });
 }
+
+export async function getPendingOrderCount(): Promise<number> {
+  return prisma.order.count({ where: { status: "PENDING" } });
+}

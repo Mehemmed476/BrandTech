@@ -26,11 +26,25 @@ export function BannerForm({ banner }: { banner?: AdminBannerRow }) {
   const isEdit = Boolean(banner);
   const [title, setTitle] = useState(banner?.title ?? "");
   const [subtitle, setSubtitle] = useState(banner?.subtitle ?? "");
+  const [badgeText, setBadgeText] = useState(
+    banner?.badgeText ?? "Premium kompüter avadanlıqları",
+  );
   const [imageUrl, setImageUrl] = useState(banner?.imageUrl ?? "");
   const [linkUrl, setLinkUrl] = useState(banner?.linkUrl ?? "");
   const [position, setPosition] = useState<string>(banner?.position ?? "HERO");
   const [sortOrder, setSortOrder] = useState(String(banner?.sortOrder ?? 0));
   const [isActive, setIsActive] = useState(banner?.isActive ?? true);
+  const [showBadge, setShowBadge] = useState(banner?.showBadge ?? true);
+  const [showTitle, setShowTitle] = useState(banner?.showTitle ?? true);
+  const [showSubtitle, setShowSubtitle] = useState(
+    banner?.showSubtitle ?? true,
+  );
+  const [showPrimaryButton, setShowPrimaryButton] = useState(
+    banner?.showPrimaryButton ?? true,
+  );
+  const [showSecondaryButton, setShowSecondaryButton] = useState(
+    banner?.showSecondaryButton ?? true,
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -43,11 +57,17 @@ export function BannerForm({ banner }: { banner?: AdminBannerRow }) {
       const input = {
         title,
         subtitle,
+        badgeText,
         imageUrl,
         linkUrl,
         position,
         sortOrder,
         isActive,
+        showBadge,
+        showTitle,
+        showSubtitle,
+        showPrimaryButton,
+        showSecondaryButton,
       };
       const result = banner
         ? await updateBannerAction(banner.id, input)
@@ -82,6 +102,15 @@ export function BannerForm({ banner }: { banner?: AdminBannerRow }) {
         onChange={(event) => setSubtitle(event.target.value)}
         error={errors.subtitle}
       />
+      {position === "HERO" ? (
+        <TextField
+          label="Badge mətni"
+          value={badgeText}
+          onChange={(event) => setBadgeText(event.target.value)}
+          error={errors.badgeText}
+          placeholder="Premium kompüter avadanlıqları"
+        />
+      ) : null}
       <ImageUploadField
         label="Şəkil"
         required
@@ -118,6 +147,50 @@ export function BannerForm({ banner }: { banner?: AdminBannerRow }) {
         checked={isActive}
         onChange={setIsActive}
       />
+      {position === "HERO" ? (
+        <section className="space-y-3 rounded-2xl border border-brand-100 bg-brand-50/50 p-4">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">
+              Hero məzmununun görünüşü
+            </h2>
+            <p className="mt-0.5 text-xs text-gray-500">
+              Hər elementi saytda ayrıca göstərib-gizlədə bilərsiniz.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <ToggleField
+              label="Badge"
+              description="Üstdəki kiçik yazı"
+              checked={showBadge}
+              onChange={setShowBadge}
+            />
+            <ToggleField
+              label="Başlıq"
+              description="Bannerin əsas başlığı"
+              checked={showTitle}
+              onChange={setShowTitle}
+            />
+            <ToggleField
+              label="Alt mətn"
+              description="Başlığın altındakı açıqlama"
+              checked={showSubtitle}
+              onChange={setShowSubtitle}
+            />
+            <ToggleField
+              label="Əsas düymə"
+              description="Bütün məhsullar düyməsi"
+              checked={showPrimaryButton}
+              onChange={setShowPrimaryButton}
+            />
+            <ToggleField
+              label="İkinci düymə"
+              description="Kateqoriyalara bax düyməsi"
+              checked={showSecondaryButton}
+              onChange={setShowSecondaryButton}
+            />
+          </div>
+        </section>
+      ) : null}
       <FormActions
         loading={pending}
         cancelHref="/admin/banners"

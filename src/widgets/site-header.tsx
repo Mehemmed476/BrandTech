@@ -8,7 +8,6 @@ import {
   Menu,
   MessageCircle,
   Phone,
-  Search,
   ShieldCheck,
   ShoppingCart,
   Truck,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/features/cart/cart-context";
+import { HeaderSearch } from "@/widgets/header-search";
 import { MegaCategoryMenu } from "@/widgets/mega-category-menu";
 import type { StoreCategory } from "@/shared/types/storefront";
 import type { StoreSettings } from "@/shared/types/settings";
@@ -47,33 +47,6 @@ function Logo({
         </span>
       </span>
     </Link>
-  );
-}
-
-function SearchBar({ id }: { id: string }) {
-  return (
-    <form action="/products" className="relative w-full" role="search">
-      <label className="sr-only" htmlFor={id}>
-        Məhsul axtar
-      </label>
-      <Search
-        aria-hidden
-        className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-      />
-      <input
-        className="h-11 w-full rounded-full border border-gray-200 bg-gray-50 pl-11 pr-24 text-sm text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-500/10"
-        id={id}
-        name="q"
-        placeholder="SSD, RAM, GPU, monitor axtar…"
-        type="search"
-      />
-      <button
-        type="submit"
-        className="absolute right-1.5 top-1.5 inline-flex h-8 items-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700"
-      >
-        Axtar
-      </button>
-    </form>
   );
 }
 
@@ -174,7 +147,7 @@ export function SiteHeader({
 
           {/* Search */}
           <div className="hidden flex-1 lg:block">
-            <SearchBar id="site-search" />
+            <HeaderSearch id="site-search" />
           </div>
 
           {/* Right actions */}
@@ -228,7 +201,7 @@ export function SiteHeader({
               </button>
             </div>
 
-            <SearchBar id="mobile-search" />
+            <HeaderSearch id="mobile-search" onNavigate={close} />
 
             <div className="mt-4 grid grid-cols-2 gap-2">
               <Link

@@ -3,6 +3,7 @@ import { CheckoutPage } from "@/features/checkout/checkout-page";
 
 export const metadata: Metadata = {
   title: "Sifarişi tamamla",
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

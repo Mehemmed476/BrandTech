@@ -127,3 +127,11 @@ export async function updateCategory(id: string, input: unknown) {
 export async function deleteCategory(id: string) {
   return prisma.category.delete({ where: { id } });
 }
+
+/** Slugs + last-modified dates for the sitemap. */
+export async function getCategorySitemapData() {
+  return prisma.category.findMany({
+    where: { isActive: true },
+    select: { slug: true, updatedAt: true },
+  });
+}

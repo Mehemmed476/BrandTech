@@ -195,16 +195,22 @@ model OrderItem {
 }
 
 model Banner {
-  id        String         @id @default(cuid())
-  title     String
-  subtitle  String?
-  imageUrl  String
-  linkUrl   String?
-  position  BannerPosition
-  isActive  Boolean        @default(true)
-  sortOrder Int            @default(0)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id                  String         @id @default(cuid())
+  title               String
+  subtitle            String?
+  badgeText           String         @default("Premium kompüter avadanlıqları")
+  imageUrl            String
+  linkUrl             String?
+  position            BannerPosition
+  isActive            Boolean        @default(true)
+  showBadge           Boolean        @default(true)
+  showTitle           Boolean        @default(true)
+  showSubtitle        Boolean        @default(true)
+  showPrimaryButton   Boolean        @default(true)
+  showSecondaryButton Boolean        @default(true)
+  sortOrder           Int            @default(0)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 }
 
 model Setting {

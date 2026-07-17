@@ -7,7 +7,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CategoryIcon } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
@@ -42,6 +42,15 @@ function useParamUpdater() {
 export function CatalogSearch() {
   const { update, searchParams } = useParamUpdater();
   const [value, setValue] = useState(searchParams.get("q") ?? "");
+
+  // Debounced real-time search: update the URL as the user types.
+  useEffect(() => {
+    const current = searchParams.get("q") ?? "";
+    if (value.trim() === current) return;
+    const timer = setTimeout(() => update({ q: value.trim() }), 350);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

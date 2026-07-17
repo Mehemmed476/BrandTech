@@ -5,10 +5,16 @@ export const bannerPositionSchema = z.enum(["HERO", "CATEGORY", "PROMO"]);
 export const bannerCreateSchema = z.object({
   title: z.string().trim().min(2).max(200),
   subtitle: z.string().trim().max(400).optional().nullable(),
+  badgeText: z.string().trim().max(100).default("Premium kompüter avadanlıqları"),
   imageUrl: z.string().trim().min(1).max(1000),
   linkUrl: z.string().trim().max(1000).optional().nullable(),
   position: bannerPositionSchema.default("HERO"),
   isActive: z.boolean().default(true),
+  showBadge: z.boolean().default(true),
+  showTitle: z.boolean().default(true),
+  showSubtitle: z.boolean().default(true),
+  showPrimaryButton: z.boolean().default(true),
+  showSecondaryButton: z.boolean().default(true),
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 

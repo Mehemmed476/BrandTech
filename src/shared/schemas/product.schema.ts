@@ -1,4 +1,8 @@
 import { z } from "zod";
+import {
+  sanitizeInlineHtml,
+  stripInlineHtml,
+} from "@/shared/utils/inline-rich-text";
 
 const moneySchema = z.coerce.number().finite().nonnegative();
 
@@ -17,7 +21,15 @@ export const productImageInputSchema = z.object({
 
 export const productSpecificationInputSchema = z.object({
   key: z.string().trim().min(1).max(120),
-  value: z.string().trim().min(1).max(500),
+  value: z
+    .string()
+    .trim()
+    .min(1)
+    .max(4000)
+    .transform(sanitizeInlineHtml)
+    .refine((value) => stripInlineHtml(value).length > 0, {
+      message: "Dəyər boş ola bilməz",
+    }),
   sortOrder: z.coerce.number().int().min(0).default(0),
 });
 

@@ -451,3 +451,60 @@ export async function updateProduct(id: string, input: unknown) {
 export async function deleteProduct(id: string) {
   return prisma.product.delete({ where: { id } });
 }
+
+export type SearchResult = {
+  id: string;
+  name: string;
+  slug: string;
+  price: string;
+  image: string;
+  brandName: string | null;
+};
+
+/** Lightweight product search for the live autocomplete dropdown. */
+export async function searchProducts(
+  q: string,
+  limit = 6,
+): Promise<SearchResult[]> {
+  const term = q.trim();
+  if (term.length < 2) return [];
+
+  const rows = await prisma.product.findMany({
+    where: {
+      status: { not: "INACTIVE" },
+      OR: [
+        { name: { contains: term, mode: "insensitive" } },
+        { sku: { contains: term, mode: "insensitive" } },
+        { brand: { name: { contains: term, mode: "insensitive" } } },
+        { category: { name: { contains: term, mode: "insensitive" } } },
+      ],
+    },
+    include: {
+      brand: { select: { name: true } },
+      images: {
+        orderBy: [{ isMain: "desc" }, { sortOrder: "asc" }],
+        take: 1,
+      },
+    },
+    orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+    take: limit,
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    price: row.price.toString(),
+    image: row.images[0]?.imageUrl ?? PLACEHOLDER_IMAGE,
+    brandName: row.brand?.name ?? null,
+  }));
+}
+
+/** Slugs + last-modified dates for the sitemap. */
+export async function getProductSitemapData() {
+  return prisma.product.findMany({
+    where: { status: { not: "INACTIVE" } },
+    select: { slug: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  });
+}

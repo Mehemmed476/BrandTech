@@ -410,19 +410,31 @@ export const banners: StoreBanner[] = [
     title: "Computer parts for reliable everyday performance",
     subtitle:
       "Original components, clean advice, and practical upgrades for home, office, and gaming systems.",
+    badgeText: "Premium computer hardware",
     imageUrl:
       "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1400&q=80",
     linkUrl: "/products",
     position: "HERO",
+    showBadge: true,
+    showTitle: true,
+    showSubtitle: true,
+    showPrimaryButton: true,
+    showSecondaryButton: true,
   },
   {
     id: "banner-promo",
     title: "Upgrade storage, memory, and graphics in one place",
     subtitle: "Balanced hardware picks from brands customers already trust.",
+    badgeText: "Premium computer hardware",
     imageUrl:
       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
     linkUrl: "/categories",
     position: "PROMO",
+    showBadge: true,
+    showTitle: true,
+    showSubtitle: true,
+    showPrimaryButton: true,
+    showSecondaryButton: true,
   },
 ];
 

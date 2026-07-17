@@ -7,10 +7,20 @@ import {
   Undo2,
   XCircle,
 } from "lucide-react";
-import { Breadcrumb, ProductCard, SectionHeader } from "@/shared/components";
+import {
+  Breadcrumb,
+  JsonLd,
+  ProductCard,
+  SectionHeader,
+} from "@/shared/components";
 import { AddToCartControls } from "@/features/products/add-to-cart-controls";
 import { ProductGallery } from "@/features/products/product-gallery";
 import { formatPrice } from "@/shared/utils/format-price";
+import {
+  sanitizeInlineHtml,
+  stripInlineHtml,
+} from "@/shared/utils/inline-rich-text";
+import { absoluteUrl, siteConfig } from "@/shared/config/site";
 import {
   getRelatedProducts,
   getStoreProductBySlug,
@@ -41,8 +51,71 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
     4,
   );
 
+  const productUrl = `${siteConfig.url}/products/${product.slug}`;
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: product.images.map((image) => absoluteUrl(image)),
+    description: product.description || product.name,
+    ...(product.sku ? { sku: product.sku } : {}),
+    brand: { "@type": "Brand", name: product.brand.name },
+    category: product.category.name,
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "AZN",
+      price: Number(product.price).toFixed(2),
+      availability: inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+    },
+    ...(product.specifications.length > 0
+      ? {
+          additionalProperty: product.specifications.map((spec) => ({
+            "@type": "PropertyValue",
+            name: spec.key,
+            value: stripInlineHtml(spec.value),
+          })),
+        }
+      : {}),
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Ana səhifə",
+        item: siteConfig.url,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Məhsullar",
+        item: `${siteConfig.url}/products`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.category.name,
+        item: `${siteConfig.url}/products?category=${product.category.slug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: product.name,
+        item: productUrl,
+      },
+    ],
+  };
+
   return (
     <main className="container-page py-6">
+      <JsonLd data={productLd} />
+      <JsonLd data={breadcrumbLd} />
       <Breadcrumb
         items={[
           { label: "Məhsullar", href: "/products" },
@@ -94,18 +167,18 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
             </span>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-soft">
-            <div className="flex flex-wrap items-end gap-3">
-              <span className="text-4xl font-black tracking-tight text-gray-900">
+          <div className="mt-5 rounded-2xl border border-gray-100 bg-white p-4 shadow-soft">
+            <div className="flex flex-wrap items-end gap-2.5">
+              <span className="text-3xl font-black tracking-tight text-gray-900">
                 {formatPrice(product.price)}
               </span>
               {product.oldPrice ? (
-                <span className="pb-1.5 text-lg text-gray-400 line-through">
+                <span className="pb-1 text-base text-gray-400 line-through">
                   {formatPrice(product.oldPrice)}
                 </span>
               ) : null}
               {discount ? (
-                <span className="mb-1 inline-flex items-center rounded-full bg-rose-500 px-2.5 py-1 text-xs font-bold text-white">
+                <span className="mb-0.5 inline-flex items-center rounded-full bg-rose-500 px-2.5 py-1 text-xs font-bold text-white">
                   {discount}% endirim
                 </span>
               ) : null}
@@ -116,7 +189,7 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
               </p>
             ) : null}
 
-            <div className="mt-4 flex items-center gap-2 text-sm font-semibold">
+            <div className="mt-3 flex items-center gap-2 text-sm font-semibold">
               {inStock ? (
                 <>
                   <CheckCircle2 className="h-4.5 w-4.5 text-brand-600" />
@@ -136,7 +209,7 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
               )}
             </div>
 
-            <div className="mt-5">
+            <div className="mt-4">
               <AddToCartControls
                 disabled={!inStock}
                 item={{
@@ -152,25 +225,8 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
-            {assurances.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className="flex flex-col items-center gap-2 rounded-2xl border border-gray-100 bg-white px-2 py-4 text-center shadow-soft"
-                >
-                  <Icon className="h-5 w-5 text-brand-600" />
-                  <span className="text-xs font-semibold text-gray-600">
-                    {item.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
           {product.specifications.length > 0 ? (
-            <div className="mt-6 rounded-2xl border border-gray-100 bg-white p-5 shadow-soft">
+            <div className="mt-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-soft">
               <div className="mb-3 flex items-center gap-2">
                 <ListChecks className="h-5 w-5 text-brand-600" />
                 <h2 className="font-bold text-gray-900">
@@ -186,14 +242,34 @@ export async function ProductDetailPage({ slug }: { slug: string }) {
                     }`}
                   >
                     <dt className="font-medium text-gray-500">{spec.key}</dt>
-                    <dd className="text-right font-semibold text-gray-900">
-                      {spec.value}
-                    </dd>
+                    <dd
+                      className="text-right font-normal text-gray-900 [&_em]:italic [&_strong]:font-bold [&_u]:underline"
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeInlineHtml(spec.value),
+                      }}
+                    />
                   </div>
                 ))}
               </dl>
             </div>
           ) : null}
+
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            {assurances.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.label}
+                  className="flex flex-col items-center gap-1.5 rounded-2xl border border-gray-100 bg-white px-2 py-3 text-center shadow-soft"
+                >
+                  <Icon className="h-5 w-5 text-brand-600" />
+                  <span className="text-xs font-semibold text-gray-600">
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </section>
 

@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import {
-  ButtonLink,
   CategoryIcon,
   ProductCard,
   SectionHeader,
 } from "@/shared/components";
+import { HeroSlider } from "@/features/home/hero-slider";
 import { safeQuery } from "@/shared/lib/safe-query";
 import { formatPrice } from "@/shared/utils/format-price";
 import { getActiveBanners } from "@/shared/services/banners/banner.service";
@@ -27,10 +27,28 @@ export async function HomePage() {
       safeQuery(getActiveBrands, []),
     ]);
 
-  const heroBanner = banners.find((banner) => banner.position === "HERO");
-  const heroImage =
-    heroBanner?.imageUrl ??
-    "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1400&q=80";
+  const heroBanners = banners.filter((banner) => banner.position === "HERO");
+  const heroSlides =
+    heroBanners.length > 0
+      ? heroBanners
+      : [
+          {
+            id: "fallback-hero",
+            title: "Etibarlı PK, hər gün işləyən.",
+            subtitle:
+              "SSD, RAM, GPU, CPU və gaming avadanlığı — rəsmi zəmanət və Bakı üzrə sürətli çatdırılma ilə.",
+            badgeText: "Premium kompüter avadanlıqları",
+            imageUrl:
+              "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1400&q=80",
+            linkUrl: "/products",
+            position: "HERO" as const,
+            showBadge: true,
+            showTitle: true,
+            showSubtitle: true,
+            showPrimaryButton: true,
+            showSecondaryButton: true,
+          },
+        ];
   const newGrid = newProducts.slice(0, 4);
   const collections = featured.slice(0, 3);
 
@@ -69,40 +87,8 @@ export async function HomePage() {
             </Link>
           </aside>
 
-          {/* Hero image banner */}
-          <div className="relative min-h-[360px] overflow-hidden rounded-3xl shadow-card lg:min-h-[440px]">
-            <Image
-              alt=""
-              src={heroImage}
-              fill
-              priority
-              sizes="(min-width: 1024px) 70vw, 100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-900/85 via-gray-900/55 to-gray-900/10" />
-            <div className="relative flex h-full max-w-xl flex-col justify-center p-8 text-white sm:p-10 lg:p-14">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wide ring-1 ring-inset ring-white/20 backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5 text-leaf-400" />
-                Premium kompüter avadanlıqları
-              </span>
-              <h1 className="mt-5 text-4xl font-black leading-[1.05] tracking-tight md:text-5xl">
-                {heroBanner?.title ?? "Etibarlı PK, hər gün işləyən."}
-              </h1>
-              <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/80">
-                {heroBanner?.subtitle ??
-                  "SSD, RAM, GPU, CPU və gaming avadanlığı — rəsmi zəmanət və Bakı üzrə sürətli çatdırılma ilə."}
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <ButtonLink href={heroBanner?.linkUrl ?? "/products"} size="lg">
-                  Bütün məhsullar
-                  <ArrowRight className="h-4.5 w-4.5" />
-                </ButtonLink>
-                <ButtonLink href="/categories" size="lg" variant="dark">
-                  Kateqoriyalara bax
-                </ButtonLink>
-              </div>
-            </div>
-          </div>
+          {/* Hero slider */}
+          <HeroSlider slides={heroSlides} />
         </div>
 
         {/* Category chips (mobile) */}

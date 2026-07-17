@@ -14,10 +14,16 @@ export type AdminBannerRow = {
   id: string;
   title: string;
   subtitle: string;
+  badgeText: string;
   imageUrl: string;
   linkUrl: string;
   position: BannerPosition;
   isActive: boolean;
+  showBadge: boolean;
+  showTitle: boolean;
+  showSubtitle: boolean;
+  showPrimaryButton: boolean;
+  showSecondaryButton: boolean;
   sortOrder: number;
 };
 
@@ -30,9 +36,15 @@ export async function getActiveBanners(): Promise<StoreBanner[]> {
     id: row.id,
     title: row.title,
     subtitle: row.subtitle ?? undefined,
+    badgeText: row.badgeText,
     imageUrl: row.imageUrl,
     linkUrl: row.linkUrl ?? undefined,
     position: row.position,
+    showBadge: row.showBadge,
+    showTitle: row.showTitle,
+    showSubtitle: row.showSubtitle,
+    showPrimaryButton: row.showPrimaryButton,
+    showSecondaryButton: row.showSecondaryButton,
   }));
 }
 
@@ -44,10 +56,16 @@ export async function getAdminBanners(): Promise<AdminBannerRow[]> {
     id: row.id,
     title: row.title,
     subtitle: row.subtitle ?? "",
+    badgeText: row.badgeText,
     imageUrl: row.imageUrl,
     linkUrl: row.linkUrl ?? "",
     position: row.position,
     isActive: row.isActive,
+    showBadge: row.showBadge,
+    showTitle: row.showTitle,
+    showSubtitle: row.showSubtitle,
+    showPrimaryButton: row.showPrimaryButton,
+    showSecondaryButton: row.showSecondaryButton,
     sortOrder: row.sortOrder,
   }));
 }
@@ -61,10 +79,16 @@ export async function getAdminBannerById(
     id: row.id,
     title: row.title,
     subtitle: row.subtitle ?? "",
+    badgeText: row.badgeText,
     imageUrl: row.imageUrl,
     linkUrl: row.linkUrl ?? "",
     position: row.position,
     isActive: row.isActive,
+    showBadge: row.showBadge,
+    showTitle: row.showTitle,
+    showSubtitle: row.showSubtitle,
+    showPrimaryButton: row.showPrimaryButton,
+    showSecondaryButton: row.showSecondaryButton,
     sortOrder: row.sortOrder,
   };
 }
@@ -75,10 +99,16 @@ export async function createBanner(input: unknown) {
     data: {
       title: data.title,
       subtitle: data.subtitle || null,
+      badgeText: data.badgeText,
       imageUrl: data.imageUrl,
       linkUrl: data.linkUrl || null,
       position: data.position,
       isActive: data.isActive,
+      showBadge: data.showBadge,
+      showTitle: data.showTitle,
+      showSubtitle: data.showSubtitle,
+      showPrimaryButton: data.showPrimaryButton,
+      showSecondaryButton: data.showSecondaryButton,
       sortOrder: data.sortOrder,
     },
   });
@@ -91,10 +121,16 @@ export async function updateBanner(id: string, input: unknown) {
     data: {
       title: data.title,
       subtitle: data.subtitle !== undefined ? data.subtitle || null : undefined,
+      badgeText: data.badgeText,
       imageUrl: data.imageUrl,
       linkUrl: data.linkUrl !== undefined ? data.linkUrl || null : undefined,
       position: data.position,
       isActive: data.isActive,
+      showBadge: data.showBadge,
+      showTitle: data.showTitle,
+      showSubtitle: data.showSubtitle,
+      showPrimaryButton: data.showPrimaryButton,
+      showSecondaryButton: data.showSecondaryButton,
       sortOrder: data.sortOrder,
     },
   });

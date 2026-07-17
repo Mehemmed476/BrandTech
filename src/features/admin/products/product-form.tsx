@@ -1,9 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useTransition, type FormEvent } from "react";
+import {
+  useState,
+  useTransition,
+  type ClipboardEvent,
+  type FormEvent,
+} from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Star, Trash2 } from "lucide-react";
+import { ClipboardPaste, Plus, Star, Trash2 } from "lucide-react";
 import { useToast } from "@/shared/components";
 import { productStatusLabels } from "@/shared/constants/labels";
 import { slugify } from "@/shared/utils/slugify";
@@ -19,6 +24,8 @@ import {
   createProductAction,
   updateProductAction,
 } from "@/features/admin/products/product-actions";
+import { InlineRichTextField } from "@/features/admin/products/inline-rich-text-field";
+import { parseSpecificationsClipboard } from "@/features/admin/products/specification-paste";
 import {
   MultiUploadButton,
   UploadButton,
@@ -127,6 +134,38 @@ export function ProductForm({
   const addSpec = () => setSpecs((prev) => [...prev, { key: "", value: "" }]);
   const removeSpec = (index: number) =>
     setSpecs((prev) => prev.filter((_, i) => i !== index));
+
+  const handleSpecificationsPaste = (event: ClipboardEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const imported = parseSpecificationsClipboard(
+      event.clipboardData.getData("text/html"),
+      event.clipboardData.getData("text/plain"),
+    );
+
+    if (imported.length === 0) {
+      toast(
+        "Mətn tanınmadı. Word cədvəli və ya “Xüsusiyyət: Dəyər” formatından istifadə edin.",
+        "error",
+      );
+      return;
+    }
+
+    setSpecs((previous) => {
+      const existing = previous.filter(
+        (spec) => spec.key.trim() || spec.value.trim(),
+      );
+      const onlyBrokenListMarkers =
+        existing.length > 0 &&
+        existing.every((spec) =>
+          /^[•·◦▪‣●○■‒–—-\uF0B7]$/u.test(spec.key.trim()),
+        );
+      return existing.length > 0 && !onlyBrokenListMarkers
+        ? [...existing, ...imported]
+        : imported;
+    });
+    event.currentTarget.innerHTML = "";
+    toast(`${imported.length} xüsusiyyət əlavə edildi.`, "success");
+  };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -392,7 +431,7 @@ export function ProductForm({
 
       {/* Specifications */}
       <section className="space-y-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-soft">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-bold text-gray-900">Xüsusiyyətlər</h2>
           <button
             type="button"
@@ -403,30 +442,50 @@ export function ProductForm({
             Sətir əlavə et
           </button>
         </div>
+        <div className="rounded-xl border border-dashed border-brand-300 bg-brand-50/60 p-3">
+          <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-brand-800">
+            <ClipboardPaste className="h-4 w-4" />
+            Word-dən toplu əlavə et
+          </div>
+          <div
+            role="textbox"
+            aria-label="Word xüsusiyyətlərini bura yapışdırın"
+            contentEditable
+            suppressContentEditableWarning
+            data-placeholder="Buraya klikləyin və Ctrl+V edin…"
+            onPaste={handleSpecificationsPaste}
+            className="min-h-16 rounded-lg border border-brand-200 bg-white px-3.5 py-3 text-sm text-gray-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 [&:empty:before]:pointer-events-none [&:empty:before]:text-gray-400 [&:empty:before]:content-[attr(data-placeholder)]"
+          />
+          <p className="mt-2 text-xs leading-relaxed text-gray-500">
+            İki sütunlu Word cədvəli, markerli siyahı, tab ilə ayrılmış sətirlər
+            və ya “Xüsusiyyət: Dəyər” formatı qəbul edilir. Bold, italic və
+            altıxətli mətn qorunur.
+          </p>
+        </div>
         <div className="space-y-3">
           {specs.map((spec, index) => (
-            <div key={index} className="flex items-center gap-3">
+            <div
+              key={index}
+              className="flex flex-col gap-3 rounded-xl border border-gray-100 bg-gray-50/40 p-3 sm:flex-row sm:items-start"
+            >
               <input
-                className={inputClass}
+                className={`${inputClass} min-w-0 flex-1 bg-white`}
                 placeholder="Xüsusiyyət (məs: Tutum)"
                 value={spec.key}
                 onChange={(event) =>
                   updateSpec(index, { key: event.target.value })
                 }
               />
-              <input
-                className={inputClass}
+              <InlineRichTextField
                 placeholder="Dəyər (məs: 1TB)"
                 value={spec.value}
-                onChange={(event) =>
-                  updateSpec(index, { value: event.target.value })
-                }
+                onChange={(value) => updateSpec(index, { value })}
               />
               <button
                 type="button"
                 onClick={() => removeSpec(index)}
                 aria-label="Sil"
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition hover:border-rose-200 hover:text-rose-500"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-lg border border-gray-200 bg-white text-gray-500 transition hover:border-rose-200 hover:text-rose-500 sm:self-start"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
