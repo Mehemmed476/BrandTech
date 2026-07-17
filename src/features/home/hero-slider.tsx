@@ -69,8 +69,6 @@ export function HeroSlider({ slides }: { slides: StoreBanner[] }) {
         </div>
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-900/85 via-gray-900/55 to-gray-900/10" />
-
       <div
         key={activeSlide.id}
         className="relative z-10 flex min-h-[360px] max-w-xl animate-fade-up flex-col justify-center p-8 pb-40 text-white sm:p-10 sm:pb-32 lg:min-h-[440px] lg:p-14 lg:pb-36"

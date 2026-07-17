@@ -43,7 +43,7 @@ export function StorefrontShell({
             />
           </div>
 
-          <div className="relative z-10">
+          <div className="relative z-[60]">
             <SiteHeader settings={settings} categories={categories} />
           </div>
           <div className="relative z-10 flex-1">{children}</div>
