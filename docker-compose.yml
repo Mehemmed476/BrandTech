@@ -3,35 +3,60 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+
+    restart: unless-stopped
+
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
+
     environment:
-      DATABASE_URL: postgresql://brand_technology:brand_technology@database:5432/brand_technology?schema=public
-      JWT_SECRET: change-me
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+
     volumes:
       - uploads_data:/app/public/uploads
+
     depends_on:
       database:
         condition: service_healthy
 
+    networks:
+      - brandtech_network
+
   database:
     image: postgres:17-alpine
+
     restart: unless-stopped
-    ports:
-      - "5432:5432"
+
     environment:
-      POSTGRES_DB: brand_technology
-      POSTGRES_USER: brand_technology
-      POSTGRES_PASSWORD: brand_technology
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U brand_technology -d brand_technology"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
+
+    networks:
+      - brandtech_network
 
 volumes:
   postgres_data:
   uploads_data:
+
+networks:
+  brandtech_network:
+    driver: bridge
