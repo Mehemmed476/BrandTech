@@ -18,14 +18,17 @@ import { useState } from "react";
 import { useCart } from "@/features/cart/cart-context";
 import { HeaderSearch } from "@/widgets/header-search";
 import { MegaCategoryMenu } from "@/widgets/mega-category-menu";
+import { StoreLogo } from "@/shared/components/store-logo";
 import type { StoreCategory } from "@/shared/types/storefront";
 import type { StoreSettings } from "@/shared/types/settings";
 
 function Logo({
   storeName,
+  logoUrl,
   onClick,
 }: {
   storeName: string;
+  logoUrl?: string;
   onClick?: () => void;
 }) {
   return (
@@ -34,10 +37,7 @@ function Logo({
       onClick={onClick}
       className="flex shrink-0 items-center gap-2.5"
     >
-      <span className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-base font-black text-white shadow-[0_6px_16px_-6px_rgba(46,125,50,0.7)]">
-        BT
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-leaf-400 ring-2 ring-white" />
-      </span>
+      <StoreLogo logoUrl={logoUrl} storeName={storeName} />
       <span className="hidden leading-none sm:block">
         <span className="block text-[15px] font-extrabold tracking-tight text-gray-900">
           {storeName}
@@ -126,7 +126,7 @@ export function SiteHeader({
       {/* Sticky main bar */}
       <div className="sticky top-0 z-50 border-b border-gray-100 glass">
         <div className="container-page flex h-16 items-center gap-3 lg:gap-6">
-          <Logo storeName={settings.storeName} />
+          <Logo storeName={settings.storeName} logoUrl={settings.logoUrl} />
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-0.5 lg:flex">
@@ -190,7 +190,11 @@ export function SiteHeader({
           />
           <div className="fixed inset-x-0 top-0 z-50 max-h-[92vh] overflow-y-auto rounded-b-3xl border-b border-gray-100 bg-white p-4 shadow-pop">
             <div className="mb-4 flex items-center justify-between">
-              <Logo storeName={settings.storeName} onClick={close} />
+              <Logo
+                storeName={settings.storeName}
+                logoUrl={settings.logoUrl}
+                onClick={close}
+              />
               <button
                 type="button"
                 onClick={close}

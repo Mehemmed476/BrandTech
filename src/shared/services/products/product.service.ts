@@ -71,6 +71,7 @@ function mapStoreProduct(row: ProductWithRelations): StoreProduct {
       id: row.category.id,
       name: row.category.name,
       slug: row.category.slug,
+      iconName: row.category.iconName ?? undefined,
       productCount: 0,
     },
     description: row.description ?? "",
@@ -146,6 +147,32 @@ function storeOrderBy(
   }
 }
 
+async function getCategoryTreeIds(slug: string): Promise<string[] | null> {
+  const categories = await prisma.category.findMany({
+    where: { isActive: true },
+    select: { id: true, parentId: true, slug: true },
+  });
+  const selected = categories.find((category) => category.slug === slug);
+  if (!selected) return null;
+
+  const ids = new Set([selected.id]);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const category of categories) {
+      if (
+        category.parentId &&
+        ids.has(category.parentId) &&
+        !ids.has(category.id)
+      ) {
+        ids.add(category.id);
+        changed = true;
+      }
+    }
+  }
+  return [...ids];
+}
+
 export async function getStoreProducts(
   query: StoreProductQuery = {},
 ): Promise<Paginated<StoreProduct>> {
@@ -161,7 +188,12 @@ export async function getStoreProducts(
       { category: { name: { contains: query.q, mode: "insensitive" } } },
     ];
   }
-  if (query.category) where.category = { slug: query.category };
+  if (query.category) {
+    const categoryIds = await getCategoryTreeIds(query.category);
+    where.categoryId = categoryIds
+      ? { in: categoryIds }
+      : { in: ["__missing_category__"] };
+  }
   if (query.brands && query.brands.length > 0) {
     where.brand = { slug: { in: query.brands } };
   } else if (query.brand) {

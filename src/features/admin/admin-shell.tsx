@@ -10,12 +10,14 @@ import {
   Image as ImageIcon,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Package,
   Search,
   Settings,
   Store,
   Tag,
+  Users,
   type LucideIcon,
   X,
 } from "lucide-react";
@@ -66,7 +68,14 @@ const navGroups: { label: string; items: NavItem[] }[] = [
     label: "Sayt",
     items: [
       { href: "/admin/banners", label: "Bannerlər", icon: ImageIcon },
+      { href: "/admin/newsletter", label: "Email abunəçiləri", icon: Mail },
       { href: "/admin/settings", label: "Parametrlər", icon: Settings },
+    ],
+  },
+  {
+    label: "İdarəetmə",
+    items: [
+      { href: "/admin/users", label: "Admin istifadəçiləri", icon: Users },
     ],
   },
 ];

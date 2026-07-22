@@ -12,6 +12,7 @@ import {
   ToggleField,
 } from "@/features/admin/form-ui";
 import { ImageUploadField } from "@/features/admin/image-upload-field";
+import { CategoryIconPicker } from "@/features/admin/categories/category-icon-picker";
 import {
   createCategoryAction,
   updateCategoryAction,
@@ -34,6 +35,7 @@ export function CategoryForm({
   const [slugTouched, setSlugTouched] = useState(isEdit);
   const [description, setDescription] = useState(category?.description ?? "");
   const [imageUrl, setImageUrl] = useState(category?.imageUrl ?? "");
+  const [iconName, setIconName] = useState(category?.iconName ?? "");
   const [parentId, setParentId] = useState(category?.parentId ?? "");
   const [sortOrder, setSortOrder] = useState(String(category?.sortOrder ?? 0));
   const [isActive, setIsActive] = useState(category?.isActive ?? true);
@@ -56,6 +58,7 @@ export function CategoryForm({
         slug,
         description,
         imageUrl,
+        iconName,
         parentId: parentId || null,
         sortOrder,
         isActive,
@@ -110,6 +113,12 @@ export function CategoryForm({
         value={imageUrl}
         onChange={setImageUrl}
         error={errors.imageUrl}
+      />
+      <CategoryIconPicker
+        value={iconName}
+        slug={slug}
+        onChange={setIconName}
+        error={errors.iconName}
       />
       <div className="grid gap-5 sm:grid-cols-2">
         <SelectField

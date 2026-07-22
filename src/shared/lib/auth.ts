@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionFail, type ActionResult } from "@/shared/lib/action-result";
+import { prisma } from "@/shared/lib/prisma";
 
 export const SESSION_COOKIE = "bt_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
@@ -15,6 +16,7 @@ export type SessionUser = {
   id: string;
   name: string;
   role: "ADMIN" | "CUSTOMER";
+  sessionVersion: number;
 };
 
 type SessionPayload = SessionUser & { exp: number };
@@ -48,7 +50,13 @@ function verifySession(token: string): SessionUser | null {
     ) as SessionPayload;
     if (!payload.exp || Date.now() > payload.exp) return null;
     if (payload.role !== "ADMIN" && payload.role !== "CUSTOMER") return null;
-    return { id: payload.id, name: payload.name, role: payload.role };
+    if (!Number.isInteger(payload.sessionVersion)) return null;
+    return {
+      id: payload.id,
+      name: payload.name,
+      role: payload.role,
+      sessionVersion: payload.sessionVersion,
+    };
   } catch {
     return null;
   }
@@ -58,7 +66,28 @@ function verifySession(token: string): SessionUser | null {
 export async function getSession(): Promise<SessionUser | null> {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
-  return verifySession(token);
+  const session = verifySession(token);
+  if (!session) return null;
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.id },
+    select: {
+      fullName: true,
+      role: true,
+      isActive: true,
+      sessionVersion: true,
+    },
+  });
+  if (
+    !user ||
+    !user.isActive ||
+    user.role !== session.role ||
+    user.sessionVersion !== session.sessionVersion
+  ) {
+    return null;
+  }
+
+  return { ...session, name: user.fullName };
 }
 
 /** Write the session cookie. Only valid inside a Server Action / Route Handler. */

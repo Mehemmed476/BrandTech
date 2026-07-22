@@ -103,7 +103,11 @@ export function CatalogChips({ categories }: { categories: StoreCategory[] }) {
                 : "border-gray-200 bg-white text-gray-700 hover:border-brand-300",
             )}
           >
-            <CategoryIcon slug={category.slug} className="h-4 w-4" />
+            <CategoryIcon
+              slug={category.slug}
+              iconName={category.iconName}
+              className="h-4 w-4"
+            />
             {category.name}
           </button>
         );

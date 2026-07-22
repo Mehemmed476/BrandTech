@@ -11,25 +11,97 @@ function img(id, w = 1000) {
   return `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`;
 }
 
+const categoryGroups = [
+  {
+    name: "Kompüter komponentləri",
+    slug: "components",
+    iconName: "Component",
+    sortOrder: 10,
+  },
+  {
+    name: "Periferiya və gaming",
+    slug: "peripherals",
+    iconName: "Gamepad2",
+    sortOrder: 20,
+  },
+  {
+    name: "Hazır sistemlər",
+    slug: "computers",
+    iconName: "Laptop",
+    sortOrder: 30,
+  },
+  {
+    name: "Şəbəkə və ofis",
+    slug: "network-office",
+    iconName: "Network",
+    sortOrder: 40,
+  },
+];
+
 const categories = [
-  { name: "SSD", slug: "ssd", sortOrder: 10 },
-  { name: "HDD", slug: "hdd", sortOrder: 20 },
-  { name: "RAM", slug: "ram", sortOrder: 30 },
-  { name: "GPU", slug: "gpu", sortOrder: 40 },
-  { name: "CPU", slug: "cpu", sortOrder: 50 },
-  { name: "Ana plata", slug: "motherboard", sortOrder: 60 },
-  { name: "Qida bloku", slug: "power-supply", sortOrder: 70 },
-  { name: "Soyutma", slug: "cooling", sortOrder: 80 },
-  { name: "Korpus", slug: "case", sortOrder: 90 },
-  { name: "Monitor", slug: "monitor", sortOrder: 100 },
-  { name: "Klaviatura", slug: "keyboard", sortOrder: 110 },
-  { name: "Siçan", slug: "mouse", sortOrder: 120 },
-  { name: "Qulaqlıq", slug: "headset", sortOrder: 130 },
-  { name: "Şəbəkə", slug: "networking", sortOrder: 140 },
-  { name: "Printer", slug: "printer", sortOrder: 150 },
-  { name: "Noutbuk", slug: "laptop", sortOrder: 160 },
-  { name: "Masaüstü PK", slug: "desktop-pc", sortOrder: 170 },
-  { name: "Gaming aksesuarları", slug: "gaming-accessories", sortOrder: 180 },
+  { name: "SSD", slug: "ssd", sortOrder: 10, parentSlug: "components" },
+  { name: "HDD", slug: "hdd", sortOrder: 20, parentSlug: "components" },
+  { name: "RAM", slug: "ram", sortOrder: 30, parentSlug: "components" },
+  { name: "GPU", slug: "gpu", sortOrder: 40, parentSlug: "components" },
+  { name: "CPU", slug: "cpu", sortOrder: 50, parentSlug: "components" },
+  {
+    name: "Ana plata",
+    slug: "motherboard",
+    sortOrder: 60,
+    parentSlug: "components",
+  },
+  {
+    name: "Qida bloku",
+    slug: "power-supply",
+    sortOrder: 70,
+    parentSlug: "components",
+  },
+  { name: "Soyutma", slug: "cooling", sortOrder: 80, parentSlug: "components" },
+  { name: "Korpus", slug: "case", sortOrder: 90, parentSlug: "components" },
+  {
+    name: "Monitor",
+    slug: "monitor",
+    sortOrder: 10,
+    parentSlug: "peripherals",
+  },
+  {
+    name: "Klaviatura",
+    slug: "keyboard",
+    sortOrder: 20,
+    parentSlug: "peripherals",
+  },
+  { name: "Siçan", slug: "mouse", sortOrder: 30, parentSlug: "peripherals" },
+  {
+    name: "Qulaqlıq",
+    slug: "headset",
+    sortOrder: 40,
+    parentSlug: "peripherals",
+  },
+  {
+    name: "Gaming aksesuarları",
+    slug: "gaming-accessories",
+    sortOrder: 50,
+    parentSlug: "peripherals",
+  },
+  { name: "Noutbuk", slug: "laptop", sortOrder: 10, parentSlug: "computers" },
+  {
+    name: "Masaüstü PK",
+    slug: "desktop-pc",
+    sortOrder: 20,
+    parentSlug: "computers",
+  },
+  {
+    name: "Şəbəkə",
+    slug: "networking",
+    sortOrder: 10,
+    parentSlug: "network-office",
+  },
+  {
+    name: "Printer",
+    slug: "printer",
+    sortOrder: 20,
+    parentSlug: "network-office",
+  },
 ];
 
 const brands = [
@@ -315,11 +387,20 @@ const products = [
 
 async function seedCategories() {
   const result = {};
+  for (const group of categoryGroups) {
+    result[group.slug] = await prisma.category.upsert({
+      where: { slug: group.slug },
+      update: { ...group, parentId: null },
+      create: group,
+    });
+  }
   for (const category of categories) {
+    const { parentSlug, ...categoryData } = category;
+    const data = { ...categoryData, parentId: result[parentSlug].id };
     result[category.slug] = await prisma.category.upsert({
       where: { slug: category.slug },
-      update: category,
-      create: category,
+      update: data,
+      create: data,
     });
   }
   return result;

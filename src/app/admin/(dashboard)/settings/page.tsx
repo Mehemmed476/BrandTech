@@ -11,7 +11,7 @@ export default async function Page() {
     <div>
       <AdminPageHeader
         title="Parametrlər"
-        description="Mağaza məlumatlarını və əlaqə detallarını idarə edin."
+        description="Mağaza məlumatlarını, əlaqə detallarını və hero banner davranışını idarə edin."
       />
       <SettingsForm settings={settings} />
     </div>

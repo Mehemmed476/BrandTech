@@ -29,6 +29,18 @@ npm run docker:up
 npm run docker:down
 ```
 
+## Newsletter email setup
+
+Apply Prisma schema changes before starting a deployment:
+
+```bash
+npm run db:push
+```
+
+Configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`,
+and `MAIL_FROM` in the environment. `NEXT_PUBLIC_APP_URL` must be the public
+site URL so unsubscribe links in emails point to the correct domain.
+
 ## Docker
 
 This project is configured for standalone Next.js output and includes a production Dockerfile plus Docker Compose for the app and PostgreSQL.

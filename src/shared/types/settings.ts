@@ -1,5 +1,6 @@
 export type StoreSettings = {
   storeName: string;
+  logoUrl: string;
   phone: string;
   whatsapp: string;
   email: string;
@@ -10,6 +11,8 @@ export type StoreSettings = {
   instagram: string;
   facebook: string;
   youtube: string;
+  heroAutoplay: boolean;
+  heroIntervalSeconds: number;
 };
 
 export type StoreSettingsKey = keyof StoreSettings;
@@ -17,6 +20,7 @@ export type StoreSettingsKey = keyof StoreSettings;
 /** Maps typed settings fields to their `Setting.key` in the database. */
 export const settingKeyMap: Record<StoreSettingsKey, string> = {
   storeName: "store.name",
+  logoUrl: "store.logoUrl",
   phone: "store.phone",
   whatsapp: "store.whatsapp",
   email: "store.email",
@@ -27,10 +31,13 @@ export const settingKeyMap: Record<StoreSettingsKey, string> = {
   instagram: "social.instagram",
   facebook: "social.facebook",
   youtube: "social.youtube",
+  heroAutoplay: "hero.autoplay",
+  heroIntervalSeconds: "hero.intervalSeconds",
 };
 
 export const defaultStoreSettings: StoreSettings = {
   storeName: "Brand Technology",
+  logoUrl: "",
   phone: "+994 00 000 00 00",
   whatsapp: "+994 00 000 00 00",
   email: "info@brandtechnology.az",
@@ -41,4 +48,6 @@ export const defaultStoreSettings: StoreSettings = {
   instagram: "#",
   facebook: "#",
   youtube: "#",
+  heroAutoplay: true,
+  heroIntervalSeconds: 7,
 };

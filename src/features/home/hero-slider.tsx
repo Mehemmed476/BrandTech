@@ -2,34 +2,43 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { ButtonLink } from "@/shared/components";
 import type { StoreBanner } from "@/shared/types/storefront";
 import { cn } from "@/shared/utils/cn";
 
-const SLIDE_INTERVAL = 6500;
-
-export function HeroSlider({ slides }: { slides: StoreBanner[] }) {
+export function HeroSlider({
+  slides,
+  autoplay = true,
+  intervalSeconds = 7,
+}: {
+  slides: StoreBanner[];
+  autoplay?: boolean;
+  intervalSeconds?: number;
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const hasMultipleSlides = slides.length > 1;
   const activeSlide = slides[activeIndex] ?? slides[0];
+  const intervalMs = Math.min(60, Math.max(2, intervalSeconds)) * 1000;
 
   useEffect(() => {
-    if (!hasMultipleSlides || isPaused) return;
+    if (!autoplay || !hasMultipleSlides || isPaused) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % slides.length);
-    }, SLIDE_INTERVAL);
+    }, intervalMs);
 
     return () => window.clearInterval(timer);
-  }, [activeIndex, hasMultipleSlides, isPaused, slides.length]);
+  }, [
+    activeIndex,
+    autoplay,
+    hasMultipleSlides,
+    intervalMs,
+    isPaused,
+    slides.length,
+  ]);
 
   if (!activeSlide) return null;
 
@@ -51,7 +60,9 @@ export function HeroSlider({ slides }: { slides: StoreBanner[] }) {
           key={slide.id}
           className={cn(
             "absolute inset-0 transition-opacity duration-700",
-            index === activeIndex ? "opacity-100" : "pointer-events-none opacity-0",
+            index === activeIndex
+              ? "opacity-100"
+              : "pointer-events-none opacity-0",
           )}
           aria-hidden={index !== activeIndex}
         >
@@ -61,8 +72,9 @@ export function HeroSlider({ slides }: { slides: StoreBanner[] }) {
             fill
             priority={index === 0}
             sizes="(min-width: 1024px) 70vw, 100vw"
+            style={{ transitionDuration: `${intervalMs}ms` }}
             className={cn(
-              "object-cover transition-transform duration-[6500ms] ease-linear",
+              "object-cover transition-transform ease-linear",
               index === activeIndex ? "scale-[1.025]" : "scale-100",
             )}
           />
@@ -91,16 +103,12 @@ export function HeroSlider({ slides }: { slides: StoreBanner[] }) {
             {activeSlide.subtitle}
           </p>
         ) : null}
-
       </div>
 
       {showButtons ? (
         <div className="absolute bottom-6 left-8 right-8 z-20 flex flex-wrap gap-3 sm:bottom-8 sm:left-10 sm:right-auto lg:left-14">
           {activeSlide.showPrimaryButton ? (
-            <ButtonLink
-              href={activeSlide.linkUrl ?? "/products"}
-              size="lg"
-            >
+            <ButtonLink href={activeSlide.linkUrl ?? "/products"} size="lg">
               Bütün məhsullar
               <ArrowRight className="h-4.5 w-4.5" />
             </ButtonLink>

@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import type { StoreCategory } from "@/shared/types/storefront";
 import type { StoreSettings } from "@/shared/types/settings";
+import { StoreLogo } from "@/shared/components/store-logo";
+import { NewsletterForm } from "@/features/newsletter/newsletter-form";
 
 const shopLinks = [
   { href: "/products", label: "Bütün məhsullar" },
@@ -72,26 +74,7 @@ export function SiteFooter({
               Spam yox — yalnız faydalı yeniləmələr.
             </p>
           </div>
-          <form className="w-full max-w-md">
-            <div className="flex items-center gap-2 rounded-2xl bg-white/10 p-2 ring-1 ring-inset ring-white/15 focus-within:ring-leaf-400/60">
-              <span className="pl-2 text-white/60">
-                <Mail className="h-5 w-5" />
-              </span>
-              <input
-                type="email"
-                name="email"
-                placeholder="siz@email.com"
-                className="h-10 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/50"
-              />
-              <button
-                type="submit"
-                className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-brand-500 px-4 text-sm font-semibold text-white transition hover:bg-brand-400"
-              >
-                <Send className="h-4 w-4" />
-                Abunə ol
-              </button>
-            </div>
-          </form>
+          <NewsletterForm />
         </div>
       </div>
 
@@ -99,9 +82,11 @@ export function SiteFooter({
       <div className="container-page grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 font-black text-white">
-              BT
-            </span>
+            <StoreLogo
+              logoUrl={settings.logoUrl}
+              storeName={settings.storeName}
+              className="ring-white/15"
+            />
             <div>
               <p className="text-[15px] font-extrabold">{settings.storeName}</p>
               <p className="text-xs text-white/60">

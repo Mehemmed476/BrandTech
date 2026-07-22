@@ -1,9 +1,11 @@
 export type StoreCategory = {
   id: string;
+  parentId?: string;
   name: string;
   slug: string;
   description?: string;
   imageUrl?: string;
+  iconName?: string;
   productCount: number;
 };
 

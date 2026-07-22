@@ -23,7 +23,11 @@ export function MegaCategoryMenu({
             onClick={onNavigate}
           >
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
-              <CategoryIcon slug={category.slug} className="h-4 w-4" />
+              <CategoryIcon
+                slug={category.slug}
+                iconName={category.iconName}
+                className="h-4 w-4"
+              />
             </span>
             {category.name}
           </Link>
@@ -42,7 +46,11 @@ export function MegaCategoryMenu({
             key={category.id}
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-inset ring-brand-100 transition group-hover/item:bg-brand-600 group-hover/item:text-white">
-              <CategoryIcon slug={category.slug} className="h-5 w-5" />
+              <CategoryIcon
+                slug={category.slug}
+                iconName={category.iconName}
+                className="h-5 w-5"
+              />
             </span>
             <span className="min-w-0">
               <span className="block text-sm font-semibold text-gray-800 group-hover/item:text-brand-700">

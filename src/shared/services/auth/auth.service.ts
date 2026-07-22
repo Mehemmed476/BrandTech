@@ -28,5 +28,10 @@ export async function authenticateAdmin(
   const valid = await bcrypt.compare(password, user.passwordHash);
   if (!valid) return null;
 
-  return { id: user.id, name: user.fullName, role: user.role };
+  return {
+    id: user.id,
+    name: user.fullName,
+    role: user.role,
+    sessionVersion: user.sessionVersion,
+  };
 }

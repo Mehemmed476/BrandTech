@@ -16,7 +16,16 @@ export async function getStoreSettings(): Promise<StoreSettings> {
   (Object.keys(settingKeyMap) as StoreSettingsKey[]).forEach((field) => {
     const value = byKey.get(settingKeyMap[field]);
     if (value !== undefined && value !== "") {
-      result[field] = value;
+      if (field === "heroAutoplay") {
+        result.heroAutoplay = value === "true";
+      } else if (field === "heroIntervalSeconds") {
+        const seconds = Number(value);
+        if (Number.isInteger(seconds) && seconds >= 2 && seconds <= 60) {
+          result.heroIntervalSeconds = seconds;
+        }
+      } else {
+        Object.assign(result, { [field]: value });
+      }
     }
   });
   return result;

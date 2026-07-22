@@ -32,7 +32,11 @@ export function CategoryCard({
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/10 to-transparent" />
         <span className="glass absolute left-3 top-3 flex h-10 w-10 items-center justify-center rounded-xl text-brand-700 shadow-soft ring-1 ring-white/60">
-          <CategoryIcon slug={category.slug} className="h-5 w-5" />
+          <CategoryIcon
+            slug={category.slug}
+            iconName={category.iconName}
+            className="h-5 w-5"
+          />
         </span>
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4">
           <div>

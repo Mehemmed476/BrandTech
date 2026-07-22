@@ -3,7 +3,8 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/shared/components";
-import { TextField } from "@/features/admin/form-ui";
+import { TextField, ToggleField } from "@/features/admin/form-ui";
+import { ImageUploadField } from "@/features/admin/image-upload-field";
 import { saveSettingsAction } from "@/features/admin/settings/settings-actions";
 import type { StoreSettings } from "@/shared/types/settings";
 
@@ -14,8 +15,10 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
   const { toast } = useToast();
   const router = useRouter();
 
-  const update = (key: keyof StoreSettings, value: string) =>
-    setValues((prev) => ({ ...prev, [key]: value }));
+  const update = <Key extends keyof StoreSettings>(
+    key: Key,
+    value: StoreSettings[Key],
+  ) => setValues((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -38,6 +41,13 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
         <h2 className="text-base font-bold text-gray-900">
           Mağaza məlumatları
         </h2>
+        <ImageUploadField
+          label="Mağaza logosu"
+          value={values.logoUrl}
+          onChange={(value) => update("logoUrl", value)}
+          error={errors.logoUrl}
+          hint="PNG, WEBP və ya şəffaf fonlu logo yükləyə bilərsiniz."
+        />
         <div className="grid gap-5 sm:grid-cols-2">
           <TextField
             label="Mağaza adı"
@@ -77,6 +87,36 @@ export function SettingsForm({ settings }: { settings: StoreSettings }) {
             error={errors.workingHours}
           />
         </div>
+      </section>
+
+      <section className="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-soft">
+        <div>
+          <h2 className="text-base font-bold text-gray-900">Hero banner</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Ana səhifədəki bannerlərin avtomatik dəyişməsini idarə edin.
+          </p>
+        </div>
+        <ToggleField
+          label="Avtomatik dəyişmə"
+          description="Söndürüldükdə banner yalnız oxlar və nöqtələrlə dəyişəcək."
+          checked={values.heroAutoplay}
+          onChange={(value) => update("heroAutoplay", value)}
+        />
+        <TextField
+          label="Dəyişmə intervalı (saniyə)"
+          type="number"
+          min={2}
+          max={60}
+          step={1}
+          disabled={!values.heroAutoplay}
+          className="disabled:cursor-not-allowed disabled:opacity-60"
+          value={values.heroIntervalSeconds}
+          onChange={(event) =>
+            update("heroIntervalSeconds", Number(event.target.value))
+          }
+          error={errors.heroIntervalSeconds}
+          hint="2–60 saniyə aralığında dəyər daxil edin."
+        />
       </section>
 
       <section className="space-y-5 rounded-2xl border border-gray-100 bg-white p-6 shadow-soft">

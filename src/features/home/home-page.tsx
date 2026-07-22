@@ -1,30 +1,30 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import {
-  CategoryIcon,
-  ProductCard,
-  SectionHeader,
-} from "@/shared/components";
+import { ChevronRight } from "lucide-react";
+import { CategoryIcon, ProductCard, SectionHeader } from "@/shared/components";
 import { HeroSlider } from "@/features/home/hero-slider";
+import { HomeCategorySidebar } from "@/features/home/home-category-sidebar";
 import { safeQuery } from "@/shared/lib/safe-query";
 import { formatPrice } from "@/shared/utils/format-price";
 import { getActiveBanners } from "@/shared/services/banners/banner.service";
 import { getActiveCategories } from "@/shared/services/categories/category.service";
 import { getActiveBrands } from "@/shared/services/brands/brand.service";
+import { getStoreSettings } from "@/shared/services/settings/settings.service";
+import { defaultStoreSettings } from "@/shared/types/settings";
 import {
   getFeaturedProducts,
   getNewProducts,
 } from "@/shared/services/products/product.service";
 
 export async function HomePage() {
-  const [banners, categories, featured, newProducts, brands] =
+  const [banners, categories, featured, newProducts, brands, settings] =
     await Promise.all([
       safeQuery(getActiveBanners, []),
       safeQuery(getActiveCategories, []),
       safeQuery(() => getFeaturedProducts(6), []),
       safeQuery(() => getNewProducts(8), []),
       safeQuery(getActiveBrands, []),
+      safeQuery(getStoreSettings, defaultStoreSettings),
     ]);
 
   const heroBanners = banners.filter((banner) => banner.position === "HERO");
@@ -51,6 +51,10 @@ export async function HomePage() {
         ];
   const newGrid = newProducts.slice(0, 4);
   const collections = featured.slice(0, 3);
+  const categoryIds = new Set(categories.map((category) => category.id));
+  const rootCategories = categories.filter(
+    (category) => !category.parentId || !categoryIds.has(category.parentId),
+  );
 
   return (
     <main className="pb-4">
@@ -58,43 +62,20 @@ export async function HomePage() {
       <section className="container-page pt-6 lg:pt-8">
         <div className="grid gap-4 lg:grid-cols-[264px_1fr]">
           {/* Category sidebar (desktop) */}
-          <aside className="hidden rounded-3xl border border-gray-100 bg-white p-2 shadow-soft lg:flex lg:h-[440px] lg:flex-col">
-            <p className="shrink-0 px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.14em] text-gray-400">
-              Kateqoriyalar
-            </p>
-            <nav className="scrollbar-slim min-h-0 flex-1 space-y-0.5 overflow-y-auto pr-1">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/products?category=${category.slug}`}
-                  className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-brand-50 hover:text-brand-700"
-                >
-                  <CategoryIcon
-                    slug={category.slug}
-                    className="h-4.5 w-4.5 shrink-0 text-brand-600"
-                  />
-                  <span className="truncate">{category.name}</span>
-                  <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-gray-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500" />
-                </Link>
-              ))}
-            </nav>
-            <Link
-              href="/categories"
-              className="mt-2 flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100"
-            >
-              Bütün kateqoriyalar
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </aside>
+          <HomeCategorySidebar categories={categories} />
 
           {/* Hero slider */}
-          <HeroSlider slides={heroSlides} />
+          <HeroSlider
+            slides={heroSlides}
+            autoplay={settings.heroAutoplay}
+            intervalSeconds={settings.heroIntervalSeconds}
+          />
         </div>
 
         {/* Category chips (mobile) */}
         {categories.length > 0 ? (
           <div className="no-scrollbar mt-4 flex gap-2.5 overflow-x-auto pb-1 lg:hidden">
-            {categories.map((category) => (
+            {rootCategories.map((category) => (
               <Link
                 key={category.id}
                 href={`/products?category=${category.slug}`}
@@ -102,6 +83,7 @@ export async function HomePage() {
               >
                 <CategoryIcon
                   slug={category.slug}
+                  iconName={category.iconName}
                   className="h-4 w-4 text-brand-600"
                 />
                 {category.name}
